@@ -2,38 +2,94 @@
 
 ## 一、项目简介
 
-本项目是一个使用Cloudflare的Worker搭建SpeedTest测速地址的工程，主要代码在`_worker.js`文件中。通过本项目，你可以很容易地在Cloudflare上搭建起自己的测速服务。
+本项目是一个使用 Cloudflare Worker 搭建 SpeedTest 测速地址的工程，主要代码在 `_worker.js` 文件中。
+通过本项目，你可以很容易地在 Cloudflare 上搭建起自己的测速服务。
+
+本项目基于原作者实现进行小幅修改，更适合自用场景。
+
+---
 
 ## 二、功能介绍
 
-例如您的项目域名为 `speedtest.cmliussss.workers.dev`
+例如您的项目域名为：`https://speedtest.example.workers.dev`
 
-1. **默认测速大小为200MB**：当未在路径中指定测速大小时，项目会默认进行200MB的测速。
+### 1. 访问根路径显示说明
 
-- 200M   默认测试下载地址: `https://speedtest.cmliussss.workers.dev`
- 
+当直接访问根路径 `/` 时，项目不会立即触发测速下载，而是返回使用说明页面，提示可用的测速方式与示例路径，避免误下载大文件。
 
-2. **自定义测速大小**：通过在路径中指定数字和单位（可选的单位包括 K，M，G），可以设定想要进行测速的数据大小，如“/500M”表示进行500MB的测速。
+---
 
-- 1024K  测试下载地址: `https://speedtest.cmliussss.workers.dev/1024k`
-- 200M   测试下载地址: `https://speedtest.cmliussss.workers.dev/200m`
-- 1G     测试下载地址: `https://speedtest.cmliussss.workers.dev/1g`
+### 2. 默认测速大小为 200MB
 
-3. **推荐使用workers部署方案并绑定自定义域，即可同时具备 http/https 两种测速途径。**
+当在路径中指定测速大小时，项目会按照指定大小进行测速。
+默认推荐使用 200MB 进行测速。
+
+示例：
+
+200M 测试下载地址: `https://speedtest.example.workers.dev/200m`
+---
+
+### 3. 自定义测速大小
+
+通过在路径中指定数字和单位（支持 `K`、`M`、`G`），可以自定义测速文件大小。
+
+示例：
+
+1024K 测试下载地址: `https://speedtest.example.workers.dev/1024k`
+200M  测试下载地址: `https://speedtest.example.workers.dev/200m`
+1G    测试下载地址: `https://speedtest.example.workers.dev/1g`
+访问后浏览器会自动下载对应大小的测试文件，用于测试当前网络的下载速度。
+
+---
+
+### 4. 测速大小限制
+
+* 最大测速大小限制为 **2GB**
+* 当请求大小超过限制时，将自动限制为最大值
+* 用于防止误请求或异常流量消耗
+
+---
 
 ## 三、使用指南
 
-1. 克隆或下载本项目到你的本地设备。
+1. 克隆或下载本项目到你的本地设备
+2. 在 Cloudflare Worker 中创建一个新的项目
+3. 将 `_worker.js` 文件中的代码复制粘贴到 Worker 编辑器中
+4. 保存并部署项目
 
-2. 在Cloudflare的Worker中创建一个新的项目，并将`worker.js`文件中的代码复制粘贴到你的项目中。
+部署完成后，即可通过浏览器访问对应 URL 进行测速。
 
-3. 部署你的Worker项目。
-
-现在，你可以访问你的Worker的URL，进行网速测试了。
+---
 
 ## 四、注意事项
 
-- 代码中的路径需要做适当修改，以反映你自己的Cloudflare Worker的URL。
-- 当路径不符合预设的格式时，程序将返回400错误。
+* 请将示例域名替换为你自己部署后的 Worker 域名
+* 本项目主要用于自用测速，不建议作为公共大流量下载服务
+* 大文件测速会消耗 Cloudflare Worker 的出口流量
 
-希望这个星级的项目能对你有所帮助，如果你喜欢或用到了本项目，希望能给我一个星级鼓励一下。
+---
+
+## 五、我的改动说明
+
+在原项目基础上，主要做了以下调整：
+
+* 根路径 `/` 显示使用说明，不再直接触发下载
+* 增加最大测速大小限制（2GB）
+* 强制关闭缓存，保证测速结果准确
+* 明确返回文件类型与下载文件名
+
+以上改动不影响原有使用方式，仅提升自用安全性与体验。
+
+---
+
+## 六、致谢
+
+本项目基于 CM大佬 的 [CF-Workers-SpeedTestURL](https://github.com/cmliu/CF-Workers-SpeedTestURL) 项目修改而来
+
+感谢 CM大佬 提供了简洁、实用的 Cloudflare Worker 测速实现方案。
+本仓库仅在其基础上进行了少量自用优化，核心思路与实现均来自原项目。
+
+如果你喜欢或用到了原项目，欢迎为原作者点一个 ⭐ 以示支持。
+
+---
+
